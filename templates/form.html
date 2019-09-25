@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if encoded_error != ('' or None) %}
+<span>it works</span>
+{% endif %}
+
+<form action='/submit' method='post'>
+
+    <label>Username *</label><input type='text' name='user'><br><hr>
+    <label>Password *</label><input type='password' name='pass1'><br><hr>
+    <label>Verify Password *</label><input type='password' name='pass2'><br><hr>
+    <label>E-Mail</label><input type='text' name='email' value = ''><br><hr>
+    <label>Favorite Color</label><input type='text' name='fav_color' value = ''><br><hr>
+    <input type="submit" value='Submit!'>
+
+</form>
+{% endblock %}
