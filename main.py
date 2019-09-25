@@ -55,7 +55,8 @@ def password_validate():
 def email_validate():
     mail = request.form['email']
     if mail:
-        if ("@" not in mail) or ('.' not in mail):
+        if (("@" not in mail) or ('.' not in mail)):
+            print(mail)
             error = 'The e-mail you have submitted is not a valid email.'
             return redirect('/?error=' + error)
         elif len_checker(mail):
@@ -68,7 +69,7 @@ def email_validate():
 def index():
     encoded_error = request.args.get('error')
     if encoded_error == None:
-        encoded_error = ' '
+        encoded_error = ''
     return render_template('form.html', encoded_error=encoded_error and cgi.escape(encoded_error, quote=True))
 
 
@@ -85,7 +86,7 @@ def submit_form():
     print(encoded_error)
 
     if encoded_error == None:
-        encoded_error = ' '
+        encoded_error = ''
 
     return render_template('form.html', encoded_error=encoded_error and cgi.escape(encoded_error, quote=True))
     
