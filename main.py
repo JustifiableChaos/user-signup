@@ -5,6 +5,9 @@ app = Flask(__name__)
 
 app.config['DEBUG'] = True   
 
+error_dict = {'user': {'space': 'No spaces allowed!', 'empty': 'Please fill out all required boxes.', 'len': 'This box must be between 2 and 20 characters.',}, 'password': {'space': 'No spaces allowed!', 'empty': 'Please fill out all required boxes.', 'len': 'This box must be between 2 and 20 characters.','match': "Your passwords don't match!",},
+ 'email': {'space': 'No spaces allowed!', 'empty': 'Please fill out all required boxes.', 'len': 'This box must be between 2 and 20 characters.','invalid': 'The email you entered is invalid.'}, '':''}
+
 def space_checker(item):
     if ' ' in item:
         return True
@@ -15,54 +18,75 @@ def empty_check(item):
     if (not item) or (item.strip == ''):
         return True
 def empty_box_error():
-    error = 'Please fill out all required boxes.'
-    return redirect('/?error=' + error)
+    error = 'empty'
+    return error
 def space_error():
-    error = 'One or more fields contains a space'
-    return redirect('/?error=' + error)
+    error = 'space'
+    return error
 def len_error():
-    error = 'One or more fields is too long or too short. Please make all fields between 3 and 20 characters.'
-    return redirect('/?error=' + error)
+    error = 'len'
+    return error
 
 def username_validator():
     name = request.form['user']
+    error = ''
     if empty_check(name):
-        empty_box_error()
+        error += 'user empty'
+    
+    if space_checker(name):
+        error += 'user space'
 
-    elif space_checker(name):
-        space_error()
+    if len_checker(name):
+        error += 'user len'
+    
+    if error != '':
+        return False, error
 
-    elif len_checker(name):
-        error = 'Your username is too short or long!'
-        return redirect('/?error=' + error)
+    else:
+        return True, ''
+
+            
+        
     
 def password_validate():
     passy = request.form['pass1']
     passy2 = request.form['pass2']
-
+    error = ''
     if empty_check(passy) or empty_check(passy2):
-        empty_box_error()
+        error += 'password empty'
     
-    elif space_checker(passy):
-        space_error()
+    if space_checker(passy):
+        error += 'password space'
     
-    elif len_checker(passy):
-        len_error()
-    elif passy2 != passy:
-        error = 'Your passwords do not match.'
-        return redirect('/?error=' + error)
+    if len_checker(passy):
+        error += 'password len'
+    
+    if passy2 != passy:
+        error += 'password match'
+    
+    if error != '':
+        return False, error
+    else:
+        return True, ''
+
 
 def email_validate():
+    error = ''
     mail = request.form['email']
-    if mail:
+    if mail != None and mail != '':
         if (("@" not in mail) or ('.' not in mail)):
             print(mail)
-            error = 'The e-mail you have submitted is not a valid email.'
-            return redirect('/?error=' + error)
-        elif len_checker(mail):
-            len_error()
-        elif space_checker(mail):
-            space_error()
+            error += 'email invalid'
+        if len_checker(mail):
+            error += 'email len'
+        if space_checker(mail):
+            error += 'email space'
+        if error != '':
+            return False, error
+        else:
+            return True, ''
+    else:
+        return True, ''
 
 
 @app.route("/")
@@ -70,25 +94,34 @@ def index():
     encoded_error = request.args.get('error')
     if encoded_error == None:
         encoded_error = ''
-    return render_template('form.html', encoded_error=encoded_error and cgi.escape(encoded_error, quote=True))
+    return render_template('form.html', encoded_error=encoded_error and cgi.escape(encoded_error, quote=True), error_dict= error_dict)
 
 
 @app.route('/submit', methods=['POST'])
 def submit_form():
-    print("it works")
-    email_validate()
-    print("it works")
-    username_validator()
-    print("it works")
-    password_validate()
-    print("it works")
+    error = ''
+    tf, err = email_validate()
+    if tf == False:
+        error += '--' + err
+    tf, err = username_validator()
+    if tf == False:
+        error += '--' + err
+            
+
+    tf, err = password_validate()
+    if tf == False:
+        error += '--' + err
+
+    if error != '':
+        return redirect('/?error=' + error)
+
     encoded_error = request.args.get('error')
     print(encoded_error)
 
     if encoded_error == None:
         encoded_error = ''
 
-    return render_template('form.html', encoded_error=encoded_error and cgi.escape(encoded_error, quote=True))
+    return render_template('form.html', encoded_error=encoded_error and cgi.escape(encoded_error, quote=True), error_dict=error_dict)
     
 
 app.run()

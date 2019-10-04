@@ -1,18 +1,50 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% if encoded_error != ('' or None) %}
-<span>it works</span>
-<span>{{encoded_error}}</span>
-{% endif %}
+
 
 <form action='/submit' method='post'>
 
-    <label>Username *</label><input type='text' name='user'><br><hr>
-    <label>Password *</label><input type='password' name='pass1'><br><hr>
-    <label>Verify Password *</label><input type='password' name='pass2'><br><hr>
-    <label>E-Mail</label><input type='text' name='email' value = ''><br><hr>
-    <label>Favorite Color</label><input type='text' name='fav_color' value = ''><br><hr>
+    <label>Username *</label><input type='text' name='user'><br>
+    {% if 'user space' in encoded_error %}
+    <p class='error'>{{error_dict['user']['space']}}</p>
+    {% endif %}
+    {% if 'user empty' in encoded_error %}
+    <p class='error'>{{error_dict['user']['empty']}}</p>
+    {% endif %}
+    {% if 'user len' in encoded_error %}
+    <p class='error'>{{error_dict['user']['len']}}</p>
+    {% endif %}
+    <hr>
+    
+    
+    <label>Password *</label><input type='password' name='pass1'><br>
+    <label>Verify Password *</label><input type='password' name='pass2'><br>
+    {% if 'password space' in encoded_error %}
+    <p class='error'>{{error_dict['password']['space']}}</p>
+    {% endif %}
+    {% if 'password empty' in encoded_error %}
+    <p class='error'>{{error_dict['password']['empty']}}</p>
+    {% endif %}
+    {% if 'password len' in encoded_error %}
+    <p class='error'>{{error_dict['password']['len']}}</p>
+    {% endif %}
+    {% if 'password match' in encoded_error %}
+    <p class='error'>{{error_dict['password']['match']}}</p>
+    {% endif %}
+    <hr>
+    
+    <label>E-Mail</label><input type='text' name='email' ><br><hr>
+    {% if 'email space' in encoded_error %}
+    <p class='error'>{{error_dict['email']['space']}}</p>
+    {% endif %}
+    {% if 'email len' in encoded_error %}
+    <p class='error'>{{error_dict['email']['len']}}</p>
+    {% endif %}
+    {% if 'email invalid' in encoded_error %}
+    <p class='error'>{{error_dict['email']['invalid']}}</p>
+    {% endif %}
+    <label>Favorite Color</label><input type='text' name='fav_color'><br><hr>
     <input type="submit" value='Submit!'>
 
 </form>
